@@ -40,6 +40,7 @@ public class playerController2 : MonoBehaviour
     SphereCollider lockOnColl;
 
     bool isRunning;
+    bool rolling;
 
     bool hoverButtonPressed;
     bool isHovering;
@@ -123,6 +124,7 @@ public class playerController2 : MonoBehaviour
 
     bool isDead = false;
 
+    int roll_speed = 10;
     
 
 
@@ -133,6 +135,8 @@ public class playerController2 : MonoBehaviour
     {
         controls = new PlayerControls();
         //controls.Player.Move.performed += ctx => SendMessage(ctx.ReadValue<Vector2>());
+
+        controls.Player.Roll.started += roll;
 
         controls.Player.Move.performed += ctx => move = ctx.ReadValue<Vector2>();
         controls.Player.Move.canceled += ctx => move = Vector2.zero;
@@ -191,6 +195,15 @@ public class playerController2 : MonoBehaviour
 
     }
 
+    private void roll(InputAction.CallbackContext ctx)
+    {
+        if (isGrounded)
+        {
+            animator.SetTrigger("roll");
+            walkSpeed += 100;
+        }
+    }
+
     private void OnEnable()
     {
         controls.Player.Enable();
@@ -199,6 +212,7 @@ public class playerController2 : MonoBehaviour
     private void OnDisable()
     {
         controls.Player.Disable();
+        controls.Player.Roll.started -= roll;
     }
 
     void SendMessage(Vector2 coordinates)

@@ -12,6 +12,7 @@ public class slimeEnemyBehaviour : MonoBehaviour
     Vector3[] patrolPoints;
     int patrolPointIdx = 0;
     int patrolPointMax;
+    FieldOfView fov;
 
 
     public enum status { Patrol, Chase, Attack, Hurt };
@@ -58,13 +59,25 @@ public class slimeEnemyBehaviour : MonoBehaviour
 
         playerScriptRef = GameObject.FindWithTag("Player").GetComponent<playerController2>();
         playerPunch = GameObject.FindWithTag("Player").GetComponent<BoxCollider>();
+        fov = GetComponent<FieldOfView>();
 
         rend = GetComponent<Renderer>();
         rend.sharedMaterial = materials[0];
 
     }
+    private void Update()
+    {
+        Debug.Log(fov.player_in_view);
+
+        if (fov.player_in_view)
+        {
+            currentStatus = status.Chase;
+            playerRef = fov.player;
+        }
+    }
     void FixedUpdate()
     {
+
         if (currentStatus == status.Patrol)
         {
             rend.sharedMaterial = materials[0];
@@ -101,8 +114,6 @@ public class slimeEnemyBehaviour : MonoBehaviour
 
         if (currentStatus == status.Attack)
         {
-            
-
             //Debug.Log("in attack mode");
             if (playerRef != null)
             {
@@ -142,8 +153,8 @@ public class slimeEnemyBehaviour : MonoBehaviour
         if (other.gameObject.tag == "Player")
         {
             
-            playerRef = other.gameObject;
-            StartCoroutine(detectPlayer());
+            //playerRef = other.gameObject;
+            //StartCoroutine(detectPlayer());
         }
 
         if (other == playerPunch)
