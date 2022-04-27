@@ -123,8 +123,9 @@ public class playerController2 : MonoBehaviour
     public bool hasMercyInvincibility = false;
 
     bool isDead = false;
+    bool canRoll = false;
 
-    int roll_speed = 10;
+    int roll_speed = 250;
     
 
 
@@ -199,9 +200,21 @@ public class playerController2 : MonoBehaviour
     {
         if (isGrounded)
         {
-            animator.SetTrigger("roll");
-            walkSpeed += 100;
+            if(canRoll)
+            {
+                animator.SetTrigger("roll");
+                walkSpeed += roll_speed;
+                canRoll = false;
+            }
+            
+            Invoke("setRoll", 0.6f);
         }
+    }
+
+    private void setRoll()
+    {
+        walkSpeed = 150;
+        canRoll = true;
     }
 
     private void OnEnable()
@@ -307,6 +320,13 @@ public class playerController2 : MonoBehaviour
                     //rotate the player to face forwards
                     float targetRotation = Mathf.Atan2(moveDirection.x, moveDirection.y) * Mathf.Rad2Deg + cameraTransform.eulerAngles.y;
                     transform.eulerAngles = Vector3.up * Mathf.SmoothDampAngle(transform.eulerAngles.y, targetRotation, ref turnSmoothVelocity, currentTurnSmoothTime);
+
+                    canRoll = true;
+                }
+
+                if(moveDirection == Vector2.zero)
+                {
+                    canRoll = false;
                 }
 
                 //update blend tree to determing walking/running animation
